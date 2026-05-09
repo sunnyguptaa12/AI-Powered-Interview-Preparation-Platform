@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: import.meta.env.VITE_BASE_URL,
     withCredentials: true,
-})
-
+});
 
 /**
  * @description Service to generate interview report based on user self description, resume and job description.
@@ -57,3 +56,5 @@ export const generateResumePdf = async ({ interviewReportId }) => {
 
     return response.data
 }
+
+export default api;

@@ -1,8 +1,13 @@
-import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api"
+import {
+    getAllInterviewReports,
+    generateInterviewReport,
+    getInterviewReportById,
+    generateResumePdf
+} from "../services/interview.api"
+
 import { useContext, useEffect } from "react"
 import { InterviewContext } from "../interview.context"
 import { useParams } from "react-router"
-
 
 export const useInterview = () => {
 
@@ -13,65 +18,129 @@ export const useInterview = () => {
         throw new Error("useInterview must be used within an InterviewProvider")
     }
 
-    const { loading, setLoading, report, setReport, reports, setReports } = context
+    const {
+        loading,
+        setLoading,
+        report,
+        setReport,
+        reports,
+        setReports
+    } = context
 
-    const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
+    // Generate Interview Report
+    const generateReport = async ({
+        jobDescription,
+        selfDescription,
+        resumeFile
+    }) => {
+
         setLoading(true)
+
         let response = null
+
         try {
-            response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
-            setReport(response.interviewReport)
+
+            response = await generateInterviewReport({
+                jobDescription,
+                selfDescription,
+                resumeFile
+            })
+
+            if (response?.interviewReport) {
+                setReport(response.interviewReport)
+            }
+
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
 
-        return response.interviewReport
+        return response?.interviewReport
     }
 
+    // Get Single Report
     const getReportById = async (interviewId) => {
+
         setLoading(true)
+
         let response = null
+
         try {
+
             response = await getInterviewReportById(interviewId)
-            setReport(response.interviewReport)
+
+            if (response?.interviewReport) {
+                setReport(response.interviewReport)
+            }
+
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
-        return response.interviewReport
+
+        return response?.interviewReport
     }
 
+    // Get All Reports
     const getReports = async () => {
+
         setLoading(true)
+
         let response = null
+
         try {
+
             response = await getAllInterviewReports()
-            setReports(response.interviewReports)
+
+            if (response?.interviewReports) {
+                setReports(response.interviewReports)
+            } else {
+                setReports([])
+            }
+
         } catch (error) {
             console.log(error)
+            setReports([])
         } finally {
             setLoading(false)
         }
 
-        return response.interviewReports
+        return response?.interviewReports || []
     }
 
+    // Download Resume PDF
     const getResumePdf = async (interviewReportId) => {
+
         setLoading(true)
-        let response = null
+
         try {
-            response = await generateResumePdf({ interviewReportId })
-            const url = window.URL.createObjectURL(new Blob([ response ], { type: "application/pdf" }))
+
+            const response = await generateResumePdf({
+                interviewReportId
+            })
+
+            const url = window.URL.createObjectURL(
+                new Blob([response], {
+                    type: "application/pdf"
+                })
+            )
+
             const link = document.createElement("a")
+
             link.href = url
-            link.setAttribute("download", `resume_${interviewReportId}.pdf`)
+
+            link.setAttribute(
+                "download",
+                `resume_${interviewReportId}.pdf`
+            )
+
             document.body.appendChild(link)
+
             link.click()
-        }
-        catch (error) {
+
+        } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
@@ -79,13 +148,22 @@ export const useInterview = () => {
     }
 
     useEffect(() => {
+
         if (interviewId) {
             getReportById(interviewId)
         } else {
             getReports()
         }
-    }, [ interviewId ])
 
-    return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
+    }, [interviewId])
 
+    return {
+        loading,
+        report,
+        reports: reports || [],
+        generateReport,
+        getReportById,
+        getReports,
+        getResumePdf
+    }
 }
