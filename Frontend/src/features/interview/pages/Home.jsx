@@ -8,14 +8,33 @@ const Home = () => {
     const { loading, generateReport, reports = [] } = useInterview()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
+    const [ charCount, setCharCount ] = useState(0)
     const resumeInputRef = useRef()
 
     const navigate = useNavigate()
 
     const handleGenerateReport = async () => {
-        const resumeFile = resumeInputRef.current.files[ 0 ]
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
-        navigate(`/interview/${data._id}`)
+        const resumeFile = resumeInputRef.current.files[0]
+
+        if (!jobDescription.trim() && !selfDescription.trim() && !resumeFile) {
+            alert('Please provide either a job description or self-description')
+            return
+        }
+
+        const data = await generateReport({
+            jobDescription,
+            selfDescription,
+            resumeFile
+        })
+
+        if (data?._id) {
+            navigate(`/interview/${data._id}`)
+        }
+    }
+
+    const handleJobDescriptionChange = (e) => {
+        setJobDescription(e.target.value)
+        setCharCount(e.target.value.length)
     }
 
     if (loading) {
@@ -49,12 +68,13 @@ const Home = () => {
                             <span className='badge badge--required'>Required</span>
                         </div>
                         <textarea
-                            onChange={(e) => { setJobDescription(e.target.value) }}
+                            value={jobDescription}
+                            onChange={handleJobDescriptionChange}
                             className='panel__textarea'
                             placeholder={`Paste the full job description here...\ne.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'`}
                             maxLength={5000}
                         />
-                        <div className='char-counter'>0 / 5000 chars</div>
+                        <div className='char-counter'>{charCount} / 5000 chars</div>
                     </div>
 
                     {/* Vertical Divider */}
@@ -92,6 +112,7 @@ const Home = () => {
                         <div className='self-description'>
                             <label className='section-label' htmlFor='selfDescription'>Quick Self-Description</label>
                             <textarea
+                                value={selfDescription}
                                 onChange={(e) => { setSelfDescription(e.target.value) }}
                                 id='selfDescription'
                                 name='selfDescription'
@@ -115,9 +136,10 @@ const Home = () => {
                     <span className='footer-info'>AI-Powered Strategy Generation &bull; Approx 30s</span>
                     <button
                         onClick={handleGenerateReport}
+                        disabled={loading}
                         className='generate-btn'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" /></svg>
-                        Generate My Interview Strategy
+                        {loading ? 'Generating...' : 'Generate My Interview Strategy'}
                     </button>
                 </div>
             </div>
