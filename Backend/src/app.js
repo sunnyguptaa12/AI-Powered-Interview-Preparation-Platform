@@ -9,7 +9,8 @@ app.use(cookieParser())
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://ai-powered-interview-preparation-pl-six.vercel.app"
+        "https://ai-powered-interview-preparation-pl-six.vercel.app",
+        "https://ai-powered-interview-preparation-platform-bkqvn5oax.vercel.app"
     ],
     credentials: true
 }));
