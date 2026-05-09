@@ -27,7 +27,7 @@ export const useInterview = () => {
         setReports
     } = context
 
-    // Generate Interview Report
+    // Generate Report
     const generateReport = async ({
         jobDescription,
         selfDescription,
@@ -51,9 +51,13 @@ export const useInterview = () => {
             }
 
         } catch (error) {
+
             console.log(error)
+
         } finally {
+
             setLoading(false)
+
         }
 
         return response?.interviewReport
@@ -75,9 +79,13 @@ export const useInterview = () => {
             }
 
         } catch (error) {
+
             console.log(error)
+
         } finally {
+
             setLoading(false)
+
         }
 
         return response?.interviewReport
@@ -101,10 +109,14 @@ export const useInterview = () => {
             }
 
         } catch (error) {
+
             console.log(error)
             setReports([])
+
         } finally {
+
             setLoading(false)
+
         }
 
         return response?.interviewReports || []
@@ -122,9 +134,7 @@ export const useInterview = () => {
             })
 
             const url = window.URL.createObjectURL(
-                new Blob([response], {
-                    type: "application/pdf"
-                })
+                new Blob([response], { type: "application/pdf" })
             )
 
             const link = document.createElement("a")
@@ -141,9 +151,13 @@ export const useInterview = () => {
             link.click()
 
         } catch (error) {
+
             console.log(error)
+
         } finally {
+
             setLoading(false)
+
         }
     }
 
@@ -160,10 +174,11 @@ export const useInterview = () => {
     return {
         loading,
         report,
-        reports: reports || [],
+        reports,
         generateReport,
         getReportById,
         getReports,
         getResumePdf
     }
+
 }
