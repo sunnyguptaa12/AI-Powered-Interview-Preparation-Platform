@@ -69,13 +69,9 @@ AI-Powered-Interview-Preparation-Platform/
 ⚙️ Environment Variables
 
 Create .env file inside backend folder.
-
 PORT=3000
-
 MONGODB_URI=your_mongodb_uri
-
 JWT_SECRET=your_jwt_secret
-
 GEMINI_API_KEY=your_gemini_api_key
 
 📦 Installation
