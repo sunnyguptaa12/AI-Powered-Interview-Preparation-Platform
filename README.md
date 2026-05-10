@@ -81,37 +81,40 @@ GEMINI_API_KEY=your_gemini_api_key
 📦 Installation
 Clone Repository
 git clone https://github.com/your-username/AI-Powered-Interview-Preparation-Platform.git
-Frontend Setup
+
+Frontend Setup:-
 cd frontend
 npm install
 npm run dev
-Backend Setup
+
+Backend Setup:-
 cd backend
 npm install
 npm run dev
+
+
 🌐 Deployment
 Frontend
-
 Deploy using:
+Vercel-
 
-Vercel
 Backend
-
 Deploy using:
-
 Render
+
 Database
-
 Use:
-
 MongoDB Atlas
+
 🔥 API Endpoints
+
 Authentication
 Method	Endpoint	Description
 POST	/api/auth/register	Register User
 POST	/api/auth/login	Login User
 GET	/api/auth/get-me	Get Current User
 POST	/api/auth/logout	Logout User
+
 Interview
 Method	Endpoint	Description
 POST	/api/interview/	Generate Interview Report
