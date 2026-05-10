@@ -117,3 +117,24 @@ POST	/api/interview/	Generate Interview Report
 GET	/api/interview/	Get All Reports
 GET	/api/interview/report/:id	Get Single Report
 POST	/api/interview/resume/pdf/:id	Generate Resume PDF
+
+📸 Screenshots
+![Home](./screenshots/home.png)
+![Login](./screenshots/login.png)
+
+
+🧠 AI Functionalities
+Resume Analysis
+Job Description Matching
+Interview Question Generation
+Skill Gap Detection
+Resume Optimization
+ATS Resume Generation
+
+👨‍💻 Author
+Sunny Gupta
+
+GitHub: https://github.com/sunnyguptaa12
+⭐ Support
+
+If you like this project, give it a ⭐ on GitHub.
