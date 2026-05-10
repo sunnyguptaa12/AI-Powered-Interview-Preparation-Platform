@@ -98,7 +98,7 @@ INSTRUCTIONS:
         console.log('🚀 Starting interview report generation...')
         
         const response = await ai.models.generateContent({
-            model: "gemini-3.1-pro",
+            model:"gemini-1.5-flash",
             contents: prompt
         })
 
@@ -196,7 +196,7 @@ Return ONLY a JSON object:
         console.log('📄 Generating resume PDF...')
         
         const response = await ai.models.generateContent({
-            model: "Gemini 3.1 Pro",
+            model: "gemini-1.5-flash",
             contents: prompt
         })
 
