@@ -105,11 +105,11 @@ MongoDB Atlas
 🔥 API Endpoints
 
 Authentication
-Method	Endpoint	Description
-POST	/api/auth/register	Register User
-POST	/api/auth/login	Login User
-GET	/api/auth/get-me	Get Current User
-POST	/api/auth/logout	Logout User
+Method	Endpoint	                      Description
+POST	/api/auth/register	              Register User
+POST	/api/auth/login	                  Login User
+GET	    /api/auth/get-me	              Get Current User
+POST	/api/auth/logout	              Logout User
 
 Interview
 Method	Endpoint	Description
@@ -118,8 +118,11 @@ GET	/api/interview/	Get All Reports
 GET	/api/interview/report/:id	Get Single Report
 POST	/api/interview/resume/pdf/:id	Generate Resume PDF
 
-📸 Screenshots
+
+## 📸 Screenshots
+
 ![Home](./screenshot/screenshotshome.png.png)
+
 ![Login](./screenshot/screenshotslogin.png.png)
 
 🧠 AI Functionalities
