@@ -119,9 +119,8 @@ GET	/api/interview/report/:id	Get Single Report
 POST	/api/interview/resume/pdf/:id	Generate Resume PDF
 
 📸 Screenshots
-![Home](./screenshots/home.png)
-![Login](./screenshots/login.png)
-
+![Home](./screenshot/screenshotshome.png.png)
+![Login](./screenshot/screenshotslogin.png.png)
 
 🧠 AI Functionalities
 Resume Analysis
