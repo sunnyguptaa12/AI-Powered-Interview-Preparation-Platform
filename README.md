@@ -118,8 +118,7 @@ GET	/api/interview/	Get All Reports
 GET	/api/interview/report/:id	Get Single Report
 POST	/api/interview/resume/pdf/:id	Generate Resume PDF
 
-
-## 📸 Screenshots
+### 📸 Screenshots
 
 ![Home](./screenshot/screenshotshome.png.png)
 
