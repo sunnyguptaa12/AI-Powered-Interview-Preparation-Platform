@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const api = axios.create({
-    baseURL: "https://ai-powered-interview-preparation-platform-so7d.onrender.com/api",
+    baseURL: import.meta.env.VITE_API_URL || "https://ai-powered-interview-preparation-platform-so7d.onrender.com/api",
     withCredentials: true
 })
 
