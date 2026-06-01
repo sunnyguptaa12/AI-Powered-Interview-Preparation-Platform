@@ -5,14 +5,18 @@ const api = axios.create({
     withCredentials: true,
 });
 
-// Add token to every request
+// 👇 ADD LOGS HERE
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("token");
 
+        console.log("INTERVIEW TOKEN:", token);
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        console.log("INTERVIEW HEADERS:", config.headers);
 
         return config;
     },
