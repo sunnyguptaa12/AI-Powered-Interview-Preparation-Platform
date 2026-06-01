@@ -1,27 +1,12 @@
 import axios from "axios";
-console.log("INTERVIEW API FILE EXECUTED");
 
 const api = axios.create({
     baseURL: "https://ai-powered-interview-preparation-platform-so7d.onrender.com/api",
     withCredentials: true,
 });
 
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("token");
+console.log("INTERVIEW API FILE EXECUTED");
 
-        console.log("TOKEN FOUND =", token);
-
-        if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        console.log("FINAL HEADERS =", config.headers);
-
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
 /**
  * Generate interview report
  */
@@ -30,6 +15,11 @@ export const generateInterviewReport = async ({
     selfDescription,
     resumeFile,
 }) => {
+
+    const token = localStorage.getItem("token");
+
+    console.log("TOKEN =", token);
+
     const formData = new FormData();
 
     formData.append("jobDescription", jobDescription);
@@ -39,11 +29,16 @@ export const generateInterviewReport = async ({
         formData.append("resume", resumeFile);
     }
 
-    const response = await api.post("/interview/", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
+    const response = await api.post(
+        "/interview/",
+        formData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
 
     return response.data;
 };
@@ -52,8 +47,16 @@ export const generateInterviewReport = async ({
  * Get interview report by interviewId
  */
 export const getInterviewReportById = async (interviewId) => {
+
+    const token = localStorage.getItem("token");
+
     const response = await api.get(
-        `/interview/report/${interviewId}`
+        `/interview/report/${interviewId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
     );
 
     return response.data;
@@ -63,7 +66,17 @@ export const getInterviewReportById = async (interviewId) => {
  * Get all interview reports
  */
 export const getAllInterviewReports = async () => {
-    const response = await api.get("/interview/");
+
+    const token = localStorage.getItem("token");
+
+    const response = await api.get(
+        "/interview/",
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
 
     return response.data;
 };
@@ -74,10 +87,16 @@ export const getAllInterviewReports = async () => {
 export const generateResumePdf = async ({
     interviewReportId,
 }) => {
+
+    const token = localStorage.getItem("token");
+
     const response = await api.post(
         `/interview/resume/pdf/${interviewReportId}`,
         null,
         {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
             responseType: "blob",
         }
     );
