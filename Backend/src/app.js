@@ -12,12 +12,11 @@ app.use(cookieParser())
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:3000",
-    process.env.FRONTEND_URL || "https://ai-powered-interview-1nqf3ukdn.vercel.app"
+    "https://ai-powered-interview-3ukdn.vercel.app"
 ]
 
 app.use(cors({
     origin: function(origin, callback) {
-        // Allow requests with no origin (mobile apps, curl requests)
         if (!origin) return callback(null, true)
         
         if (allowedOrigins.includes(origin)) {
@@ -31,11 +30,9 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
-/* require all the routes here */
 const authRouter = require("./routes/auth.routes")
 const interviewRouter = require("./routes/interview.routes")
 
-/* using all the routes here */
 app.use("/api/auth", authRouter)
 app.use("/api/interview", interviewRouter)
 
