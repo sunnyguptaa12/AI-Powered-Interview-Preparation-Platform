@@ -1,4 +1,5 @@
 import axios from "axios";
+alert("INTERVIEW API LOADED");
 
 const api = axios.create({
     baseURL: "https://ai-powered-interview-preparation-platform-so7d.onrender.com/api",
