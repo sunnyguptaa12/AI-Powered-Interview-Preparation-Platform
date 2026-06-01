@@ -10,7 +10,7 @@ app.use(cors({
     origin: [
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://ai-powered-interview-gmial2kol.vercel.app"
+        "https://ai-powered-interview-preparation-platform-8mwcmtymh.vercel.app"
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
