@@ -44,9 +44,9 @@ async function registerUserController(req, res) {
 
     res.cookie("token", token)
 
-
     res.status(201).json({
         message: "User registered successfully",
+        token: token,
         user: {
             id: user._id,
             username: user.username,
@@ -91,6 +91,7 @@ async function loginUserController(req, res) {
     res.cookie("token", token)
     res.status(200).json({
         message: "User loggedIn successfully.",
+        token: token,
         user: {
             id: user._id,
             username: user.username,
@@ -128,8 +129,6 @@ async function getMeController(req, res) {
 
     const user = await userModel.findById(req.user.id)
 
-
-
     res.status(200).json({
         message: "User details fetched successfully",
         user: {
@@ -140,8 +139,6 @@ async function getMeController(req, res) {
     })
 
 }
-
-
 
 module.exports = {
     registerUserController,
