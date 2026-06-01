@@ -1,31 +1,27 @@
 import axios from "axios";
-alert("INTERVIEW API LOADED");
+console.log("INTERVIEW API FILE EXECUTED");
 
 const api = axios.create({
     baseURL: "https://ai-powered-interview-preparation-platform-so7d.onrender.com/api",
     withCredentials: true,
 });
 
-// 👇 ADD LOGS HERE
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("token");
 
-        console.log("INTERVIEW TOKEN:", token);
+        console.log("TOKEN FOUND =", token);
 
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers["Authorization"] = `Bearer ${token}`;
         }
 
-        console.log("INTERVIEW HEADERS:", config.headers);
+        console.log("FINAL HEADERS =", config.headers);
 
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
-
 /**
  * Generate interview report
  */
