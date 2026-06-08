@@ -1,9 +1,36 @@
 const { GoogleGenAI } = require("@google/genai")
-const puppeteer = require("puppeteer")
 
 const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENAI_API_KEY
 })
+
+/**
+ * Safely extract JSON from Gemini response text.
+ * Handles markdown fences and extra text around JSON.
+ */
+function extractJson(text) {
+    // Remove markdown fences
+    let cleaned = text
+        .replace(/```json\s*/gi, "")
+        .replace(/```\s*/g, "")
+        .trim()
+
+    // Try direct parse first
+    try {
+        return JSON.parse(cleaned)
+    } catch (_) {}
+
+    // Find the first { ... } block
+    const start = cleaned.indexOf("{")
+    const end = cleaned.lastIndexOf("}")
+    if (start !== -1 && end !== -1 && end > start) {
+        try {
+            return JSON.parse(cleaned.slice(start, end + 1))
+        } catch (_) {}
+    }
+
+    throw new Error("Could not extract valid JSON from AI response")
+}
 
 async function generateInterviewReport({
     resume,
@@ -12,61 +39,49 @@ async function generateInterviewReport({
 }) {
 
     const prompt = `
-Return ONLY valid JSON.
+Return ONLY valid JSON. No markdown, no explanation, no extra text.
 
-STRICT RULES:
-- technicalQuestions MUST be array of objects
-- behavioralQuestions MUST be array of objects
-- skillGaps MUST be array of objects
-- preparationPlan MUST be array of objects
-- matchScore MUST be number only
-
-Example format:
-
+Format:
 {
-  "title": "Backend Developer",
+  "title": "Job Title",
   "matchScore": 80,
-
   "technicalQuestions": [
     {
       "question": "What is event loop?",
       "intention": "Check async knowledge",
-      "answer": "Event loop handles async operations"
+      "answer": "Event loop handles async operations in JS"
     }
   ],
-
   "behavioralQuestions": [
     {
       "question": "Tell me about yourself",
-      "intention": "Check communication",
-      "answer": "I am a MERN developer"
+      "intention": "Check communication skills",
+      "answer": "I am a developer with X years experience"
     }
   ],
-
   "skillGaps": [
     {
       "skill": "Docker",
       "severity": "medium"
     }
   ],
-
   "preparationPlan": [
     {
       "day": 1,
-      "focus": "Node.js",
+      "focus": "Node.js Fundamentals",
       "tasks": [
         "Learn event loop",
-        "Practice APIs"
+        "Practice REST APIs"
       ]
     }
   ]
 }
 
 Resume:
-${resume}
+${resume || "Not provided"}
 
 Self Description:
-${selfDescription}
+${selfDescription || "Not provided"}
 
 Job Description:
 ${jobDescription}
@@ -77,52 +92,27 @@ ${jobDescription}
         contents: prompt
     })
 
-    const text = response.text
+    const parsedResponse = extractJson(response.text)
 
-    const cleanedText = text
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim()
-
-    const parsedResponse = JSON.parse(cleanedText)
-
+    // Sanitize matchScore
     parsedResponse.matchScore =
-        Number(String(parsedResponse.matchScore).replace("%", "")) || 75
+        Number(String(parsedResponse.matchScore || "75").replace("%", "")) || 75
 
-    parsedResponse.title =
-        parsedResponse.title || "Software Developer"
+    parsedResponse.title = parsedResponse.title || "Software Developer"
+
+    // Ensure arrays exist
+    parsedResponse.technicalQuestions = parsedResponse.technicalQuestions || []
+    parsedResponse.behavioralQuestions = parsedResponse.behavioralQuestions || []
+    parsedResponse.skillGaps = parsedResponse.skillGaps || []
+    parsedResponse.preparationPlan = parsedResponse.preparationPlan || []
 
     return parsedResponse
 }
 
-async function generatePdfFromHtml(htmlContent) {
-
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"]
-    })
-
-    const page = await browser.newPage()
-
-    await page.setContent(htmlContent, {
-        waitUntil: "networkidle0"
-    })
-
-    const pdfBuffer = await page.pdf({
-        format: "A4",
-        margin: {
-            top: "20mm",
-            bottom: "20mm",
-            left: "15mm",
-            right: "15mm"
-        }
-    })
-
-    await browser.close()
-
-    return pdfBuffer
-}
-
+/**
+ * Generate resume HTML using Gemini, then convert to PDF using html-pdf-node.
+ * Puppeteer is NOT used — it requires a Chrome binary which is unavailable on Render.com.
+ */
 async function generateResumePdf({
     resume,
     selfDescription,
@@ -130,19 +120,20 @@ async function generateResumePdf({
 }) {
 
     const prompt = `
-Generate ATS friendly resume HTML.
+Generate a clean, ATS-friendly resume in HTML format.
 
-Return ONLY valid JSON.
+Return ONLY valid JSON. No markdown, no extra text.
 
+Format:
 {
-  "html": "<html>...</html>"
+  "html": "<html><head><style>body{font-family:Arial,sans-serif;margin:40px;color:#222;} h1{font-size:24px;} h2{font-size:16px;border-bottom:1px solid #ccc;padding-bottom:4px;} p,li{font-size:13px;line-height:1.6;}</style></head><body>...</body></html>"
 }
 
-Resume:
-${resume}
+Resume content:
+${resume || "Not provided"}
 
 Self Description:
-${selfDescription}
+${selfDescription || "Not provided"}
 
 Job Description:
 ${jobDescription}
@@ -153,16 +144,23 @@ ${jobDescription}
         contents: prompt
     })
 
-    const cleanedResumeText = response.text
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim()
+    const jsonContent = extractJson(response.text)
 
-    const jsonContent = JSON.parse(cleanedResumeText)
+    if (!jsonContent.html) {
+        throw new Error("AI did not return HTML for resume")
+    }
 
-    const pdfBuffer = await generatePdfFromHtml(
-        jsonContent.html
-    )
+    // Use html-pdf-node (works on Render.com without Chrome binary)
+    const htmlPdf = require("html-pdf-node")
+
+    const file = { content: jsonContent.html }
+    const options = {
+        format: "A4",
+        margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
+        printBackground: true
+    }
+
+    const pdfBuffer = await htmlPdf.generatePdf(file, options)
 
     return pdfBuffer
 }

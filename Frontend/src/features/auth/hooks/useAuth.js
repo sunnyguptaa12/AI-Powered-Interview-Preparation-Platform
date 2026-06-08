@@ -7,34 +7,31 @@ export const useAuth = () => {
     const context = useContext(AuthContext)
     const { user, setUser, loading, setLoading } = context
 
+    // handleLogin - loading state touch nahi karta (caller manage karega)
     const handleLogin = async ({ email, password }) => {
-        setLoading(true)
         try {
             const data = await login({ email, password })
             setUser(data.user)
         } catch (err) {
             console.log("Login error:", err)
-        } finally {
-            setLoading(false)
+            throw err
         }
     }
 
     const handleRegister = async ({ username, email, password }) => {
-        setLoading(true)
         try {
             const data = await register({ username, email, password })
             setUser(data.user)
         } catch (err) {
             console.log("Register error:", err)
-        } finally {
-            setLoading(false)
+            throw err
         }
     }
 
     const handleLogout = async () => {
         setLoading(true)
         try {
-            const data = await logout()
+            await logout()
             setUser(null)
         } catch (err) {
             console.log("Logout error:", err)
@@ -43,14 +40,14 @@ export const useAuth = () => {
         }
     }
 
+    // Sirf initial app load pe getMe check karta hai (loading: true → false)
     useEffect(() => {
         const getAndSetUser = async () => {
             try {
                 const data = await getMe()
                 setUser(data.user)
             } catch (err) {
-                // User not logged in - this is normal on first load
-                console.log("User not authenticated")
+                // Normal - user logged in nahi hai
                 setUser(null)
             } finally {
                 setLoading(false)

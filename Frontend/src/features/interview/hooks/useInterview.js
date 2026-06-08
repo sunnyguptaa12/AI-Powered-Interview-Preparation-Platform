@@ -6,7 +6,15 @@ import { useParams } from "react-router"
 export const useInterview = () => {
 
     const context = useContext(InterviewContext)
-    const { interviewId } = useParams()
+
+    // Fix 7: useParams safely use karo - may return undefined outside route context
+    let interviewId
+    try {
+        const params = useParams()
+        interviewId = params?.interviewId
+    } catch {
+        interviewId = undefined
+    }
 
     if (!context) {
         throw new Error("useInterview must be used within an InterviewProvider")
@@ -46,7 +54,6 @@ export const useInterview = () => {
         } catch (error) {
 
             console.error("Generate Report Error:", error)
-
             return null
 
         } finally {
@@ -55,13 +62,13 @@ export const useInterview = () => {
         }
     }
 
-    const getReportById = async (interviewId) => {
+    const getReportById = async (id) => {
 
         setLoading(true)
 
         try {
 
-            const response = await getInterviewReportById(interviewId)
+            const response = await getInterviewReportById(id)
 
             const interviewReport = response?.interviewReport || null
 
@@ -91,8 +98,7 @@ export const useInterview = () => {
 
             const response = await getAllInterviewReports()
 
-            const interviewReports =
-                response?.interviewReports || []
+            const interviewReports = response?.interviewReports || []
 
             setReports(interviewReports)
 

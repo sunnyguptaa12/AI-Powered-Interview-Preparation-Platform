@@ -42,7 +42,12 @@ async function registerUserController(req, res) {
             { expiresIn: "1d" }
         )
 
-        res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'lax' })
+        // Fix 6: secure only in production, sameSite "none" for cross-origin in prod
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+        })
 
         res.status(201).json({
             message: "User registered successfully",
@@ -100,7 +105,12 @@ async function loginUserController(req, res) {
             { expiresIn: "1d" }
         )
 
-        res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'lax' })
+        // Fix 6: secure only in production, sameSite "none" for cross-origin in prod
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+        })
         
         res.status(200).json({
             message: "User loggedIn successfully.",

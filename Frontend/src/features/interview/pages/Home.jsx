@@ -5,17 +5,35 @@ import { useNavigate } from 'react-router'
 
 const Home = () => {
 
-    const { loading, generateReport,reports } = useInterview()
+    const { loading, generateReport, reports } = useInterview()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
+    const [ error, setError ] = useState("") // Fix 3: error state
     const resumeInputRef = useRef()
 
     const navigate = useNavigate()
 
+    // Fix 3: null check on data before navigating
     const handleGenerateReport = async () => {
-        const resumeFile = resumeInputRef.current.files[ 0 ]
+        setError("")
+        const resumeFile = resumeInputRef.current.files[0]
+
+        if (!jobDescription.trim()) {
+            setError("Job description required hai.")
+            return
+        }
+        if (!resumeFile && !selfDescription.trim()) {
+            setError("Resume ya Self Description mein se koi ek zaroori hai.")
+            return
+        }
+
         const data = await generateReport({ jobDescription, selfDescription, resumeFile })
-        navigate(`/interview/${data._id}`)
+
+        if (data?._id) {
+            navigate(`/interview/${data._id}`)
+        } else {
+            setError("Report generate nahi hua. Dobara try karo.")
+        }
     }
 
     if (loading) {
@@ -54,7 +72,8 @@ const Home = () => {
                             placeholder={`Paste the full job description here...\ne.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'`}
                             maxLength={5000}
                         />
-                        <div className='char-counter'>0 / 5000 chars</div>
+                        {/* Fix 8: char counter ab dynamic hai */}
+                        <div className='char-counter'>{jobDescription.length} / 5000 chars</div>
                     </div>
 
                     {/* Vertical Divider */}
@@ -109,6 +128,13 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Fix 3: error message show karo */}
+                {error && (
+                    <div style={{ padding: '0 2rem', color: 'red', fontSize: '0.9rem' }}>
+                        {error}
+                    </div>
+                )}
 
                 {/* Card Footer */}
                 <div className='interview-card__footer'>
