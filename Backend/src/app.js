@@ -8,18 +8,21 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 
-// Dynamic CORS - reads from environment variable
-const allowedOrigins = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://ai-powered-interview-preparation-platform-43rojt60h.vercel.app"
-]
-
 app.use(cors({
     origin: function(origin, callback) {
+        // Allow requests with no origin (mobile apps, curl, etc.)
         if (!origin) return callback(null, true)
-        
-        if (allowedOrigins.includes(origin)) {
+
+        const allowedOrigins = [
+            "http://localhost:5173",
+            "http://localhost:3000",
+        ]
+
+        // Allow any Vercel deployment URL automatically
+        const isVercel = origin.endsWith(".vercel.app")
+        const isAllowed = allowedOrigins.includes(origin) || isVercel
+
+        if (isAllowed) {
             callback(null, true)
         } else {
             callback(new Error('Not allowed by CORS'))

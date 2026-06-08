@@ -1,82 +1,43 @@
-import axios from "axios";
+import axios from "axios"
 
-// Fix 4: env variable use karo, hardcoded URL nahi
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || "https://ai-powered-interview-preparation-platform-so7d.onrender.com/api",
     withCredentials: true,
-});
+})
 
-// Add token to every request automatically
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+    const token = localStorage.getItem("token")
+    if (token) config.headers.Authorization = `Bearer ${token}`
+    return config
+})
 
-/**
- * Generate interview report
- */
-export const generateInterviewReport = async ({
-    jobDescription,
-    selfDescription,
-    resumeFile,
-}) => {
+export const generateInterviewReport = async ({ jobDescription, selfDescription, resumeFile }) => {
+    const formData = new FormData()
+    formData.append("jobDescription", jobDescription)
+    formData.append("selfDescription", selfDescription)
+    if (resumeFile) formData.append("resume", resumeFile)
+    const response = await api.post("/interview/", formData, { headers: { "Content-Type": "multipart/form-data" } })
+    return response.data
+}
 
-    const formData = new FormData();
-
-    formData.append("jobDescription", jobDescription);
-    formData.append("selfDescription", selfDescription);
-
-    if (resumeFile) {
-        formData.append("resume", resumeFile);
-    }
-
-    const response = await api.post(
-        "/interview/",
-        formData,
-        {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        }
-    );
-
-    return response.data;
-};
-
-/**
- * Get interview report by interviewId
- */
 export const getInterviewReportById = async (interviewId) => {
-    const response = await api.get(`/interview/report/${interviewId}`);
-    return response.data;
-};
+    const response = await api.get(`/interview/report/${interviewId}`)
+    return response.data
+}
 
-/**
- * Get all interview reports
- */
 export const getAllInterviewReports = async () => {
-    const response = await api.get("/interview/");
-    return response.data;
-};
+    const response = await api.get("/interview/")
+    return response.data
+}
 
-/**
- * Generate resume PDF
- */
-export const generateResumePdf = async ({
-    interviewReportId,
-}) => {
-    const response = await api.post(
-        `/interview/resume/pdf/${interviewReportId}`,
-        null,
-        {
-            responseType: "blob",
-        }
-    );
+export const generateResumePdf = async ({ interviewReportId }) => {
+    const response = await api.post(`/interview/resume/pdf/${interviewReportId}`, null, { responseType: "blob" })
+    return response.data
+}
 
-    return response.data;
-};
+export const deleteInterviewReport = async (interviewId) => {
+    const response = await api.delete(`/interview/${interviewId}`)
+    return response.data
+}
 
-export default api;
+export default api

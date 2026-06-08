@@ -4,14 +4,12 @@ import "../auth.form.scss"
 import { useAuth } from '../hooks/useAuth'
 
 const Login = () => {
-
-    const { handleLogin } = useAuth()   // loading yahan nahi liya
+    const { handleLogin } = useAuth()
     const navigate = useNavigate()
-
-    const [ email, setEmail ] = useState("")
-    const [ password, setPassword ] = useState("")
-    const [ error, setError ] = useState("")
-    const [ submitting, setSubmitting ] = useState(false) // local loading
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
+    const [submitting, setSubmitting] = useState(false)
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -21,8 +19,7 @@ const Login = () => {
             await handleLogin({ email, password })
             navigate('/')
         } catch (err) {
-            const msg = err?.response?.data?.message || "Invalid email or password."
-            setError(msg)
+            setError(err?.response?.data?.message || "Invalid email or password.")
         } finally {
             setSubmitting(false)
         }
@@ -32,31 +29,26 @@ const Login = () => {
         <main>
             <div className="form-container">
                 <h1>Login</h1>
-                {error && <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>}
+                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
-                        <input
-                            onChange={(e) => setEmail(e.target.value)}
-                            value={email}
-                            type="email" id="email" name='email'
-                            placeholder='Enter email address'
-                            disabled={submitting} />
+                        <input onChange={e => setEmail(e.target.value)} value={email}
+                            type="email" id="email" placeholder='Enter email address' disabled={submitting} />
                     </div>
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
-                        <input
-                            onChange={(e) => setPassword(e.target.value)}
-                            value={password}
-                            type="password" id="password" name='password'
-                            placeholder='Enter password'
-                            disabled={submitting} />
+                        <input onChange={e => setPassword(e.target.value)} value={password}
+                            type="password" id="password" placeholder='Enter password' disabled={submitting} />
+                    </div>
+                    <div style={{ textAlign: 'right', marginTop: '-0.25rem' }}>
+                        <Link to="/forgot-password" style={{ fontSize: '0.85rem' }}>Forgot Password?</Link>
                     </div>
                     <button className='button primary-button' disabled={submitting}>
                         {submitting ? "Logging in..." : "Login"}
                     </button>
                 </form>
-                <p>Don't have an account? <Link to={"/register"}>Register</Link></p>
+                <p>Don't have an account? <Link to="/register">Register</Link></p>
             </div>
         </main>
     )
